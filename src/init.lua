@@ -83,9 +83,7 @@ function module.waitForChildWithPredicate(parent: Instance, timeout: number?, pr
 			Promise.delay(timeout):andThenReturn(nil),
 		}):andThen(function(result)
 			if result == nil then
-				return Promise.reject(
-					("Unable to find child of [%s] that matches predicate before timeout"):format(parent:GetFullName())
-				)
+				return Promise.reject(("Unable to find child of [%s] that matches predicate before timeout"):format(parent:GetFullName()))
 			end
 			return result
 		end)

@@ -1,0 +1,28 @@
+{
+	"name": "explore-by-predicate",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Packages": {
+				"$path": "Packages",
+				"ExploreByPredicate": {
+					"$path": "default.project.json"
+				}
+			}
+		},
+		"ServerScriptService": {
+			"$className": "ServerScriptService",
+			"ServerEntry": {
+				"$path": "test/serverEntry.server.lua"
+			}
+		},
+		"StarterPlayer": {
+			"StarterPlayerScripts": {
+				"ClientEntry": {
+					"$path": "test/clientEntry.client.lua"
+				}
+			}
+		}
+	}
+}

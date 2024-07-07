@@ -9,7 +9,7 @@ Get it here:
 
 ## API
 
-```Lua
+```Luau
 --[=[
 Creates a new promise looking for a child/descendant that matches the conditions of the predicate provided. 
 If no child/descendant is found the promise will reject.

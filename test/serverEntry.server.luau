@@ -1,23 +1,37 @@
-local ExploreByPredicate = require(game.ReplicatedStorage.Packages.ExploreByPredicate)
+--!strict
 
---stylua: ignore
-ExploreByPredicate.findFirstChild(workspace, "Part"):andThen(function(part)
-	print("Found", part)
-end):catch(warn)
+local Explorer = require(game.ReplicatedStorage.Packages.ExploreByPredicate)
 
-ExploreByPredicate.waitForChild(workspace, "Part"):andThen(function(part)
-	print("Waited for", part)
+Explorer.FindFirstChild.byName(workspace, false, "Part"):andThen(function(part)
+	if part then
+		print(part, "was found!")
+	else
+		print("unable to find 'Part'.")
+	end
 end)
 
-local created = Instance.new("Part")
-created.Transparency = 1
-created.Parent = workspace
-
-ExploreByPredicate.findFirstChildWithPredicate(workspace, false, function(child)
-	return child:IsA("BasePart") and child.Transparency < 1
-end):andThen(function(part)
-	print("Found non transparent", part)
+Explorer.WaitForChild.byName(workspace, math.huge, "Part"):andThen(function(part)
+	if part then
+		print(part, "was found!")
+	else
+		print("unable to find 'Part' before being timed out.")
+	end
 end)
 
-local PlayerModule = ExploreByPredicate.findFirstPath(game, { "StarterPlayer", "StarterPlayerScripts", "PlayerModule" }):expect()
-print(PlayerModule:GetFullName())
+local targetColor = Color3.fromRGB(40, 200, 130)
+local part = Instance.new("Part")
+part.Anchored = true
+part.Color = targetColor
+part.Parent = workspace
+
+Explorer.FindFirstChild
+	.byPredicate(game, true, function(candidate)
+		return candidate:IsA("BasePart") and candidate.Color == targetColor
+	end)
+	:andThen(function(found)
+		if found then
+			print(found, "was found with correct color!")
+		else
+			print("unable to find BasePart with correct color.")
+		end
+	end)

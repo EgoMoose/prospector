@@ -22,6 +22,12 @@ print(Explorer.Get.children(workspace))
 print(Explorer.Get.descendantsBFS(workspace))
 print(Explorer.Get.descendantsDFS(workspace))
 
+print(Explorer.FindFirstAncestor
+	.byPredicate(workspace.Camera.Decal.SurfaceAppearance.SelectionSphere, function(candidate)
+		return candidate:IsA("Decal")
+	end)
+	:expect())
+
 local targetColor = Color3.fromRGB(40, 200, 130)
 local part = Instance.new("Part")
 part.Anchored = true

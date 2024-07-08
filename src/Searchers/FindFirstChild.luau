@@ -37,6 +37,24 @@ local function byName(parent: Instance, recursive: boolean, name: string)
 	end)
 end
 
+local function ofClass(parent: Instance, recursive: boolean, className: string)
+	if recursive then
+		return byPredicate(parent, true, function(child)
+			return child.ClassName == className
+		end)
+	end
+
+	return Promise.new(function(resolve)
+		resolve(parent:FindFirstChildOfClass(className))
+	end)
+end
+
+local function whichIsA(parent: Instance, recursive: boolean, className: string)
+	return Promise.new(function(resolve)
+		resolve(parent:FindFirstChildWhichIsA(className, recursive))
+	end)
+end
+
 local function byPath(parent: Instance, path: { string })
 	local search = Promise.resolve(parent)
 	for _, name in path do
@@ -52,6 +70,8 @@ end
 
 FindFirstChild.byPredicate = RejectIfNil.wrap(byPredicate)
 FindFirstChild.byName = RejectIfNil.wrap(byName)
+FindFirstChild.ofClass = RejectIfNil.wrap(ofClass)
+FindFirstChild.whichIsA = RejectIfNil.wrap(whichIsA)
 FindFirstChild.byPath = RejectIfNil.wrap(byPath)
 
 --

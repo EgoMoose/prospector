@@ -1,4 +1,4 @@
-# explore-by-predicate
+# prospector
  
 A Roblox lua package for traveling and capturing the data-model hierarchy
 

@@ -18,6 +18,10 @@ Explorer.WaitForChild.byName(workspace, math.huge, "Part"):andThen(function(part
 	end
 end)
 
+print(Explorer.Get.children(workspace))
+print(Explorer.Get.descendantsBFS(workspace))
+print(Explorer.Get.descendantsDFS(workspace))
+
 local targetColor = Color3.fromRGB(40, 200, 130)
 local part = Instance.new("Part")
 part.Anchored = true

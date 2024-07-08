@@ -16,12 +16,12 @@ local function byPredicate(parent: Instance, recursive: boolean, predicate: (Ins
 		local queue = Queue.new(parent:GetChildren())
 
 		while queue:getLength() > 0 do
-			local popped = queue:dequeue()
+			local front = queue:dequeue()
 
-			if predicate(popped) then
-				return resolve(popped)
+			if predicate(front) then
+				return resolve(front)
 			elseif recursive then
-				for _, child in popped:GetChildren() do
+				for _, child in front:GetChildren() do
 					queue:enqueue(child)
 				end
 			end

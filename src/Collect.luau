@@ -56,7 +56,8 @@ function Collect.children(root: Instance, predicate: ((Instance) -> boolean)?)
 	return noYield(function()
 		local children = {}
 		for _, child in root:GetChildren() do
-			if not predicate or predicate(child) then
+			local result = if predicate then predicate(child) else true
+			if result then
 				table.insert(children, child)
 			end
 		end
@@ -69,28 +70,48 @@ end
 	@within Collect
 
 	@param root Instance
-	@param predicate? (Instance) -> boolean -- The function to filter the descendants with.
+	@param predicate? (Instance, number) -> boolean? -- The function to filter the descendants with. The second arg represents depth.
 	@return { Instance } -- The filtered descendants.
 
-	Travels Breadth-First. Any Instances that do not pass the predicate will not be included.
+	Travels Breadth-First. The predicate of this function can return `true`, `false`, or `nil` with different behaviors for each:
+		`true`: The Instance is included in the result array
+		`false`: The Instance is not included in the result array
+		`nil`: The Instance is not included in the result array and travel will not continue through its descendants
 
 	```lua
-	local onlyBaseParts = descendantsBFS(workspace, function(child)
+	local onlyBaseParts = descendantsBFS(game, function(child)
+		if child:IsA("Workspace") then
+			return nil
+		end
+
 		return child:IsA("BasePart")
 	end)
 	```
 ]=]
-function Collect.descendantsBFS(root: Instance, predicate: ((Instance) -> boolean)?)
+function Collect.descendantsBFS(root: Instance, predicate: ((Instance, number) -> boolean?)?)
 	return noYield(function()
 		local descendants = {}
+		local depthMap = {}
 
-		local queue = Queue.new(root:GetChildren())
+		local children = root:GetChildren()
+		for _, child in children do
+			depthMap[child] = 1
+		end
+
+		local queue = Queue.new(children)
 		while queue:getLength() > 0 do
 			local front = queue:dequeue()
+			local depth = depthMap[front]
 
-			if not predicate or predicate(front) then
+			local result = if predicate then predicate(front, depth) else true
+			if result then
 				table.insert(descendants, front)
+			end
+
+			if result ~= nil then
+				local nextDepth = depth + 1
 				for _, child in front:GetChildren() do
+					depthMap[child] = nextDepth
 					queue:enqueue(child)
 				end
 			end
@@ -105,31 +126,50 @@ end
 	@within Collect
 
 	@param root Instance
-	@param predicate? (Instance) -> boolean -- The function to filter the descendants with.
+	@param predicate? (Instance, number) -> boolean? -- The function to filter the descendants with. The second arg represents depth.
 	@return { Instance } -- The filtered descendants.
 
-	Travels Depth-First. Any Instances that do not pass the predicate will not be included.
+	Travels Depth-First. The predicate of this function can return `true`, `false`, or `nil` with different behaviors for each:
+		`true`: The Instance is included in the result array
+		`false`: The Instance is not included in the result array
+		`nil`: The Instance is not included in the result array and travel will not continue through its descendants
 
 	```lua
-	local onlyBaseParts = descendantsDFS(workspace, function(child)
+	local onlyBaseParts = descendantsDFS(game, function(child, depth)
+		if child:IsA("Workspace") or depth >= 2 then
+			return nil
+		end
+
 		return child:IsA("BasePart")
 	end)
 	```
 ]=]
-function Collect.descendantsDFS(root: Instance, predicate: ((Instance) -> boolean)?)
+function Collect.descendantsDFS(root: Instance, predicate: ((Instance, number) -> boolean?)?)
 	return noYield(function()
 		local descendants = {}
+		local depthMap = {}
 
 		local stack = reverse(root:GetChildren())
+		for _, child in stack do
+			depthMap[child] = 1
+		end
+
 		while #stack > 0 do
 			local popped = table.remove(stack) :: Instance
+			local depth = depthMap[popped]
 
-			if not predicate or predicate(popped) then
+			local result = if predicate then predicate(popped, depth) else true
+			if result then
 				table.insert(descendants, popped)
+			end
 
+			if result ~= nil then
+				local nextDepth = depth + 1
 				local children = popped:GetChildren()
 				for i = #children, 1, -1 do
-					table.insert(stack, children[i])
+					local child = children[i]
+					depthMap[child] = nextDepth
+					table.insert(stack, child)
 				end
 			end
 		end

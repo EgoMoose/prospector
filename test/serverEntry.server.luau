@@ -18,9 +18,9 @@ Prospector.WaitForChild.byName(workspace, math.huge, "Part"):andThen(function(pa
 	end
 end)
 
-print(Prospector.Get.children(workspace))
-print(Prospector.Get.descendantsBFS(workspace))
-print(Prospector.Get.descendantsDFS(workspace))
+print(Prospector.Collect.children(workspace))
+print(Prospector.Collect.descendantsBFS(workspace))
+print(Prospector.Collect.descendantsDFS(workspace))
 
 print(Prospector.FindFirstAncestor
 	.byPredicate(workspace.Camera.Decal.SurfaceAppearance.SelectionSphere, function(candidate)

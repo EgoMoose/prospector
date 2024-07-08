@@ -1,0 +1,12 @@
+title = "Prospector"
+gitSourceBranch = "main"
+
+classOrder = ["Prospector"]
+
+[home]
+enabled = false
+includeReadme = true
+
+[docusaurus.themeConfig.colorMode]
+respectPrefersColorScheme = true
+defaultMode = "dark"

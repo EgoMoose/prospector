@@ -1,15 +1,28 @@
 --!strict
 
-local Getters = require(script:WaitForChild("Getters"))
+--[=[
+	@class Prospector
 
-local searchers = script:WaitForChild("Searchers")
-local FindFirstAncestor = require(searchers:WaitForChild("FindFirstAncestor"))
-local FindFirstChild = require(searchers:WaitForChild("FindFirstChild"))
-local WaitForChild = require(searchers:WaitForChild("WaitForChild"))
+	A Roblox lua package for traveling and capturing the data-model hierarchy.
+]=]
+local Prospector = {
+	Collect = require(script:FindFirstChild("Collect")),
 
-return {
-	Get = Getters,
-	FindFirstAncestor = FindFirstAncestor,
-	FindFirstChild = FindFirstChild,
-	WaitForChild = WaitForChild,
+	FindFirstAncestor = require(script:FindFirstChild("FindFirstAncestor")),
+	FindFirstChild = require(script:FindFirstChild("FindFirstChild")),
+	WaitForChild = require(script:FindFirstChild("WaitForChild")),
 }
+
+--- @prop Collect Collect
+--- @within Prospector
+
+--- @prop FindFirstAncestor FindFirstAncestor
+--- @within Prospector
+
+--- @prop FindFirstChild FindFirstChild
+--- @within Prospector
+
+--- @prop WaitForChild WaitForChild
+--- @within Prospector
+
+return Prospector

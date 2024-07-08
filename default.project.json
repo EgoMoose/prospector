@@ -1,5 +1,5 @@
 {
-	"name": "explore-by-predicate",
+	"name": "prospector",
 	"tree": {
 		"$path": "src"
 	}

@@ -1,5 +1,5 @@
 {
-	"name": "ExploreByPredicate",
+	"name": "Prospector",
 	"tree": {
 		"$className": "ModuleScript",
 		"$properties": {

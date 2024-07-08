@@ -1,12 +1,11 @@
 [package]
-name = "egomoose/explore-by-predicate"
-description = "https://github.com/EgoMoose/explore-by-predicate"
-version = "0.1.0"
+name = "egomoose/prospector"
+description = "https://github.com/EgoMoose/prospector"
+version = "1.0.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"
 exclude = ["test", "assets"]
-private = true
 
 [dependencies]
 Promise = "evaera/promise@4.0.0"

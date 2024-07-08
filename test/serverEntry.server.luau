@@ -1,8 +1,8 @@
 --!strict
 
-local Explorer = require(game.ReplicatedStorage.Packages.ExploreByPredicate)
+local Prospector = require(game.ReplicatedStorage.Packages.Prospector)
 
-Explorer.FindFirstChild.byName(workspace, false, "Part"):andThen(function(part)
+Prospector.FindFirstChild.byName(workspace, false, "Part"):andThen(function(part)
 	if part then
 		print(part, "was found!")
 	else
@@ -10,7 +10,7 @@ Explorer.FindFirstChild.byName(workspace, false, "Part"):andThen(function(part)
 	end
 end)
 
-Explorer.WaitForChild.byName(workspace, math.huge, "Part"):andThen(function(part)
+Prospector.WaitForChild.byName(workspace, math.huge, "Part"):andThen(function(part)
 	if part then
 		print(part, "was found!")
 	else
@@ -18,11 +18,11 @@ Explorer.WaitForChild.byName(workspace, math.huge, "Part"):andThen(function(part
 	end
 end)
 
-print(Explorer.Get.children(workspace))
-print(Explorer.Get.descendantsBFS(workspace))
-print(Explorer.Get.descendantsDFS(workspace))
+print(Prospector.Get.children(workspace))
+print(Prospector.Get.descendantsBFS(workspace))
+print(Prospector.Get.descendantsDFS(workspace))
 
-print(Explorer.FindFirstAncestor
+print(Prospector.FindFirstAncestor
 	.byPredicate(workspace.Camera.Decal.SurfaceAppearance.SelectionSphere, function(candidate)
 		return candidate:IsA("Decal")
 	end)
@@ -34,7 +34,7 @@ part.Anchored = true
 part.Color = targetColor
 part.Parent = workspace
 
-Explorer.FindFirstChild
+Prospector.FindFirstChild
 	.byPredicate(game, true, function(candidate)
 		return candidate:IsA("BasePart") and candidate.Color == targetColor
 	end)

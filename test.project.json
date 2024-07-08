@@ -9,19 +9,15 @@
 				"Prospector": {
 					"$path": "default.project.json"
 				}
+			},
+			"DevPackages": {
+				"$path": "DevPackages"
 			}
 		},
 		"ServerScriptService": {
 			"$className": "ServerScriptService",
-			"ServerEntry": {
-				"$path": "test/serverEntry.server.luau"
-			}
-		},
-		"StarterPlayer": {
-			"StarterPlayerScripts": {
-				"ClientEntry": {
-					"$path": "test/clientEntry.client.luau"
-				}
+			"TestRunner": {
+				"$path": "test/TestRunner.server.luau"
 			}
 		}
 	}

@@ -9,3 +9,6 @@ exclude = ["test", "assets"]
 
 [dependencies]
 Promise = "evaera/promise@4.0.0"
+
+[dev-dependencies]
+TestEZ = "roblox/testez@0.4.1"

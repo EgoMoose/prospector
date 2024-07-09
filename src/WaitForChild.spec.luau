@@ -1,143 +1,133 @@
 --!strict
 
-local spawnAfter = 0.1
+local rootPackage = script.Parent
+local packages = rootPackage.Parent
+local Promise = require(packages.Promise)
+
+local spawnAfter = 0.2
 local partProperties = {
 	Name = "SomePart",
 	Color = Color3.fromRGB(10, 20, 30),
 }
 
-local function spawnPart(callback: (() -> BasePart?) -> ())
-	local destroyed = false
+return function()
+	local WaitForChild = require(script.Parent:FindFirstChild("WaitForChild"))
+
 	local targetPart: BasePart
 	task.delay(spawnAfter, function()
 		targetPart = Instance.new("WedgePart")
 		for property, value in partProperties do
 			(targetPart :: any)[property] = value
 		end
-
-		if destroyed then
-			targetPart:Destroy()
-		else
-			targetPart.Parent = workspace
-		end
+		targetPart.Parent = workspace
 	end)
 
-	local function getPart()
-		return targetPart
+	local promises = {}
+
+	-- byPredicate
+	local function predicate(child: Instance)
+		return child:IsA("BasePart") and child.Color == partProperties.Color
 	end
 
-	callback(getPart)
-	if targetPart then
-		targetPart:Destroy()
-	else
-		destroyed = true
-	end
-end
+	promises.byPredicate = WaitForChild.byPredicate(workspace, spawnAfter + 1, predicate)
+	promises.byPredicateHalf = WaitForChild.byPredicate(workspace, spawnAfter / 2, predicate)
 
-return function()
-	local WaitForChild = require(script.Parent:FindFirstChild("WaitForChild"))
+	-- byName
+	promises.byName = WaitForChild.byName(workspace, spawnAfter + 1, partProperties.Name)
+	promises.byNameHalf = WaitForChild.byName(workspace, spawnAfter / 2, partProperties.Name)
+
+	-- ofClass
+	promises.ofClass = WaitForChild.ofClass(workspace, spawnAfter + 1, "WedgePart")
+	promises.ofClassHalf = WaitForChild.ofClass(workspace, spawnAfter / 2, "WedgePart")
+
+	-- whichIsA
+	promises.whichIsA = WaitForChild.whichIsA(workspace, spawnAfter + 1, "WedgePart")
+	promises.whichIsAHalf = WaitForChild.whichIsA(workspace, spawnAfter / 2, "WedgePart")
+
+	-- byPath
+	promises.byPath = WaitForChild.byPath(game, spawnAfter + 1, { "Workspace", partProperties.Name })
+	promises.byPathHalf = WaitForChild.byPath(game, spawnAfter / 2, { "Workspace", partProperties.Name })
 
 	describe("byPredicate", function()
 		it("should find Instances conditionally", function()
-			spawnPart(function(getPart)
-				local found = WaitForChild.byPredicate(workspace, spawnAfter + 1, function(child)
-					return child:IsA("BasePart") and child.Color == partProperties.Color
-				end):expect()
+			local found = promises.byPredicate:expect()
 
-				local part = getPart()
-				expect(part).to.never.equal(nil)
-				expect(found).to.equal(part)
-			end)
+			expect(targetPart).never.to.equal(nil)
+			expect(found).to.equal(targetPart)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
-			spawnPart(function()
-				local found = WaitForChild.byPredicate(workspace, spawnAfter / 2, function(child)
-					return child:IsA("BasePart") and child.Color == partProperties.Color
-				end):expect()
+			local found = promises.byPredicateHalf:expect()
 
-				expect(found).to.equal(nil)
-			end)
+			expect(found).to.equal(nil)
 		end)
 	end)
 
 	describe("byName", function()
 		it("should find Instances conditionally", function()
-			spawnPart(function(getPart)
-				local found = WaitForChild.byName(workspace, spawnAfter + 1, partProperties.Name):expect()
+			local found = promises.byName:expect()
 
-				local part = getPart()
-				expect(part).to.never.equal(nil)
-				expect(found).to.equal(part)
-			end)
+			expect(targetPart).never.to.equal(nil)
+			expect(found).to.equal(targetPart)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
-			spawnPart(function()
-				local found = WaitForChild.byName(workspace, spawnAfter / 2, partProperties.Name):expect()
+			local found = promises.byNameHalf:expect()
 
-				expect(found).to.equal(nil)
-			end)
+			expect(found).to.equal(nil)
 		end)
 	end)
 
 	describe("ofClass", function()
 		it("should find Instances conditionally", function()
-			spawnPart(function(getPart)
-				local found = WaitForChild.ofClass(workspace, spawnAfter + 1, "WedgePart"):expect()
+			local found = promises.ofClass:expect()
 
-				local part = getPart()
-				expect(part).to.never.equal(nil)
-				expect(found).to.equal(part)
-			end)
+			expect(targetPart).never.to.equal(nil)
+			expect(found).to.equal(targetPart)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
-			spawnPart(function()
-				local found = WaitForChild.ofClass(workspace, spawnAfter / 2, "WedgePart"):expect()
+			local found = promises.ofClassHalf:expect()
 
-				expect(found).to.equal(nil)
-			end)
+			expect(found).to.equal(nil)
 		end)
 	end)
 
 	describe("whichIsA", function()
 		it("should find Instances conditionally", function()
-			spawnPart(function(getPart)
-				local found = WaitForChild.whichIsA(workspace, spawnAfter + 1, "WedgePart"):expect()
+			local found = promises.whichIsA:expect()
 
-				local part = getPart()
-				expect(part).to.never.equal(nil)
-				expect(found).to.equal(part)
-			end)
+			expect(targetPart).never.to.equal(nil)
+			expect(found).to.equal(targetPart)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
-			spawnPart(function()
-				local found = WaitForChild.whichIsA(workspace, spawnAfter / 2, "WedgePart"):expect()
+			local found = promises.whichIsAHalf:expect()
 
-				expect(found).to.equal(nil)
-			end)
+			expect(found).to.equal(nil)
 		end)
 	end)
 
 	describe("byPath", function()
 		it("should find Instances conditionally", function()
-			spawnPart(function(getPart)
-				local found = WaitForChild.byPath(game, spawnAfter + 1, { "Workspace", partProperties.Name }):expect()
+			local found = promises.byPath:expect()
 
-				local part = getPart()
-				expect(part).to.never.equal(nil)
-				expect(found).to.equal(part)
-			end)
+			expect(targetPart).never.to.equal(nil)
+			expect(found).to.equal(targetPart)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
-			spawnPart(function()
-				local found = WaitForChild.byPath(game, spawnAfter / 2, { "Workspace", partProperties.Name }):expect()
+			local found = promises.byPathHalf:expect()
 
-				expect(found).to.equal(nil)
-			end)
+			expect(found).to.equal(nil)
 		end)
 	end)
+
+	local flatPromises = {}
+	for _, promise in promises do
+		table.insert(flatPromises, promise)
+	end
+
+	Promise.all(flatPromises):await()
+	targetPart:Destroy()
 end

@@ -4,9 +4,8 @@ local root = script.Parent.Parent
 local packages = root.Parent
 local Promise = require(packages.Promise)
 
-local ENABLED = false
-
 local RejectIfNil = {}
+local isEnabled = false
 
 -- Private
 
@@ -39,12 +38,20 @@ end
 
 -- Public
 
+function RejectIfNil.isEnabled()
+	return isEnabled
+end
+
+function RejectIfNil.setEnabled(enabled: boolean)
+	isEnabled = not not enabled
+end
+
 function RejectIfNil.wrap<T, U..., V...>(func: (U...) -> T, ...: V...)
 	local unpackVarArgs = packVarArgs(...)
 
 	return function(...: U...)
 		local promise = func(...) :: any
-		if ENABLED then
+		if isEnabled then
 			return promise:andThen(function(...)
 				-- reject only if a singular nil return
 				if argMatch(packVarArgs(...), nil) then

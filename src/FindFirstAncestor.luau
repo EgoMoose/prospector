@@ -105,12 +105,43 @@ local function whichIsA(root: Instance, className: string)
 	end)
 end
 
+--[=[
+	@function byDepth
+	@within FindFirstAncestor
+
+	@param root Instance
+	@param depth number -- How many steps upwards should be travelled
+	@return Promise<Instance?> -- The result of the search wrapped as a promise.
+
+	Travels up through the ancestry of `root` by `depth` number of steps.
+
+	```lua
+	local found = byDepth(workspace.Terrain, 2):expect()
+	```
+]=]
+local function byDepth(root: Instance, depth: number)
+	return Promise.new(function(resolve, reject)
+		local count = 0
+		local parent = root
+		while count < depth do
+			parent = parent.Parent :: Instance
+			if not parent then
+				return reject(nil)
+			end
+			count = count + 1
+		end
+
+		resolve(parent)
+	end)
+end
+
 -- Public
 
 FindFirstAncestor.byPredicate = RejectIfNil.wrap(byPredicate)
 FindFirstAncestor.byName = RejectIfNil.wrap(byName)
 FindFirstAncestor.ofClass = RejectIfNil.wrap(ofClass)
 FindFirstAncestor.whichIsA = RejectIfNil.wrap(whichIsA)
+FindFirstAncestor.byDepth = RejectIfNil.wrap(byDepth)
 
 --
 

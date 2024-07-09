@@ -1,3 +1,5 @@
+--!strict
+
 return function()
 	local FindFirstChild = require(script.Parent:FindFirstChild("FindFirstChild"))
 

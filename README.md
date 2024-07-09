@@ -1,5 +1,4 @@
-# prospector
-<!--moonwave-hide-before-this-line-->
+# Prospector
 
 A Roblox lua package for traveling and capturing the data-model hierarchy
 

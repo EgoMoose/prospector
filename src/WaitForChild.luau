@@ -16,25 +16,6 @@ local WaitForChild = {}
 
 -- Private
 
---[=[
-	@function byPredicate
-	@within WaitForChild
-
-	@param root Instance
-	@param timeout number -- How long before the promise automatically resolves as nil.
-	@param predicate? (Instance) -> boolean -- The conditions under which the search has successfully found a result.
-	@return Promise<Instance?> -- The result of the search wrapped as a promise.
-
-	First looks through the children of `root` for an Instance that passes the conditions of the predicate and if none 
-	are found begins listening for new instances and changes to existing ones.
-
-	```lua
-	local found = byPredicate(workspace, math.huge, function(child)
-		-- waiting for the first descendant of workspace that's a BasePart and has a certain color
-		return child:IsA("BasePart") and child.Color = Color3.fromRGB(100, 120, 80)
-	end):expect()
-	```
-]=]
 local function byPredicate(root: Instance, timeout: number, predicate: (Instance) -> boolean)
 	assert(timeout > 0, "timeout must be greater than 0")
 
@@ -81,22 +62,6 @@ local function byPredicate(root: Instance, timeout: number, predicate: (Instance
 	})
 end
 
---[=[
-	@function byName
-	@within WaitForChild
-
-	@param root Instance
-	@param timeout number -- How long before the promise automatically resolves as nil.
-	@param name string -- The name of the Instance being searched for.
-	@return Promise<Instance?> -- The result of the search wrapped as a promise.
-
-	First looks through the children of `root` for an Instance with the same name and if none are found begins 
-	listening for new instances and changes to existing ones.
-
-	```lua
-	local found = byName(workspace, math.huge, "Part"):expect()
-	```
-]=]
 local function byName(root: Instance, timeout: number, name: string)
 	assert(timeout > 0, "timeout must be greater than 0")
 
@@ -105,22 +70,6 @@ local function byName(root: Instance, timeout: number, name: string)
 	end)
 end
 
---[=[
-	@function ofClass
-	@within WaitForChild
-
-	@param root Instance
-	@param timeout number -- How long before the promise automatically resolves as nil.
-	@param className string -- The class name of the Instance being searched for.
-	@return Promise<Instance?> -- The result of the search wrapped as a promise.
-
-	First looks through the children of `root` for an Instance with the same ClassName and if none are found begins 
-	listening for new instances and changes to existing ones.
-
-	```lua
-	local found = ofClass(workspace, math.huge, "Part"):expect()
-	```
-]=]
 local function ofClass(root: Instance, timeout: number, className: string)
 	assert(timeout > 0, "timeout must be greater than 0")
 
@@ -129,22 +78,6 @@ local function ofClass(root: Instance, timeout: number, className: string)
 	end)
 end
 
---[=[
-	@function whichIsA
-	@within WaitForChild
-
-	@param root Instance
-	@param timeout number -- How long before the promise automatically resolves as nil.
-	@param className string -- The class name of the Instance being search for.
-	@return Promise<Instance?> -- The result of the search wrapped as a promise.
-
-	First looks through the children of `root` for an Instance that's equivalent to or a subclass of a given class
-	and if if none are found then begins listening for new instances and changes to existing ones.
-
-	```lua
-	local found = whichIsA(workspace, math.huge, "BasePart"):expect()
-	```
-]=]
 local function whichIsA(root: Instance, timeout: number, className: string)
 	assert(timeout > 0, "timeout must be greater than 0")
 
@@ -153,22 +86,6 @@ local function whichIsA(root: Instance, timeout: number, className: string)
 	end)
 end
 
---[=[
-	@function byPath
-	@within WaitForChild
-
-	@param root Instance
-	@param timeout number -- How long before the promise automatically resolves as nil.
-	@param path { string } -- The path by name from the root to the target Instance.
-	@return Promise<Instance?> -- The result of the search wrapped as a promise.
-
-	Travels the path starting from the `root` instance and if none are found begins listening for new instances and 
-	changes to existing ones at each step.
-
-	```lua
-	local found = byPath(game, math.huge, { "Workspace", "Terrain" }):expect()
-	```
-]=]
 local function byPath(root: Instance, timeout: number, path: { string })
 	assert(timeout > 0, "timeout must be greater than 0")
 
@@ -188,13 +105,116 @@ local function byPath(root: Instance, timeout: number, path: { string })
 	return search
 end
 
+local byPredicateWrapped = RejectIfNil.wrap(byPredicate)
+local byNameWrapped = RejectIfNil.wrap(byName)
+local ofClassWrapped = RejectIfNil.wrap(ofClass)
+local whichIsAWrapped = RejectIfNil.wrap(whichIsA)
+local byPathWrapped = RejectIfNil.wrap(byPath)
+
 -- Public
 
-WaitForChild.byPredicate = RejectIfNil.wrap(byPredicate)
-WaitForChild.byName = RejectIfNil.wrap(byName)
-WaitForChild.ofClass = RejectIfNil.wrap(ofClass)
-WaitForChild.whichIsA = RejectIfNil.wrap(whichIsA)
-WaitForChild.byPath = RejectIfNil.wrap(byPath)
+--[=[
+	@function byPredicate
+	@within WaitForChild
+
+	@param root Instance
+	@param timeout number -- How long before the promise automatically resolves as nil.
+	@param predicate? (Instance) -> boolean -- The conditions under which the search has successfully found a result.
+	@return Promise<Instance?> -- The result of the search wrapped as a promise.
+
+	First looks through the children of `root` for an Instance that passes the conditions of the predicate and if none 
+	are found begins listening for new instances and changes to existing ones.
+
+	```lua
+	local found = byPredicate(workspace, math.huge, function(child)
+		-- waiting for the first descendant of workspace that's a BasePart and has a certain color
+		return child:IsA("BasePart") and child.Color = Color3.fromRGB(100, 120, 80)
+	end):expect()
+	```
+]=]
+function WaitForChild.byPredicate(root: Instance, timeout: number, predicate: (Instance) -> boolean)
+	return byPredicateWrapped(root, timeout, predicate)
+end
+
+--[=[
+	@function byName
+	@within WaitForChild
+
+	@param root Instance
+	@param timeout number -- How long before the promise automatically resolves as nil.
+	@param name string -- The name of the Instance being searched for.
+	@return Promise<Instance?> -- The result of the search wrapped as a promise.
+
+	First looks through the children of `root` for an Instance with the same name and if none are found begins 
+	listening for new instances and changes to existing ones.
+
+	```lua
+	local found = byName(workspace, math.huge, "Part"):expect()
+	```
+]=]
+function WaitForChild.byName(root: Instance, timeout: number, name: string)
+	return byNameWrapped(root, timeout, name)
+end
+
+--[=[
+	@function ofClass
+	@within WaitForChild
+
+	@param root Instance
+	@param timeout number -- How long before the promise automatically resolves as nil.
+	@param className string -- The class name of the Instance being searched for.
+	@return Promise<Instance?> -- The result of the search wrapped as a promise.
+
+	First looks through the children of `root` for an Instance with the same ClassName and if none are found begins 
+	listening for new instances and changes to existing ones.
+
+	```lua
+	local found = ofClass(workspace, math.huge, "Part"):expect()
+	```
+]=]
+function WaitForChild.ofClass(root: Instance, timeout: number, className: string)
+	return ofClassWrapped(root, timeout, className)
+end
+
+--[=[
+	@function whichIsA
+	@within WaitForChild
+
+	@param root Instance
+	@param timeout number -- How long before the promise automatically resolves as nil.
+	@param className string -- The class name of the Instance being search for.
+	@return Promise<Instance?> -- The result of the search wrapped as a promise.
+
+	First looks through the children of `root` for an Instance that's equivalent to or a subclass of a given class
+	and if if none are found then begins listening for new instances and changes to existing ones.
+
+	```lua
+	local found = whichIsA(workspace, math.huge, "BasePart"):expect()
+	```
+]=]
+function WaitForChild.whichIsA(root: Instance, timeout: number, className: string)
+	return whichIsAWrapped(root, timeout, className)
+end
+
+--[=[
+	@function byPath
+	@within WaitForChild
+
+	@param root Instance
+	@param timeout number -- How long before the promise automatically resolves as nil.
+	@param path { string } -- The path by name from the root to the target Instance.
+	@return Promise<Instance?> -- The result of the search wrapped as a promise.
+
+	Travels the path starting from the `root` instance and if none are found begins listening for new instances and 
+	changes to existing ones at each step.
+
+	```lua
+	local found = byPath(game, math.huge, { "Workspace", "Terrain" }):expect()
+	```
+]=]
+function WaitForChild.byPath(root: Instance, timeout: number, path: { string })
+	return byPathWrapped(root, timeout, path)
+end
 
 --
 

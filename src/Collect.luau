@@ -73,18 +73,20 @@ end
 	@param predicate? (Instance, number) -> boolean? -- The function to filter the descendants with. The second arg represents depth.
 	@return { Instance } -- The filtered descendants.
 
-	Travels Breadth-First. The predicate of this function can return `true`, `false`, or `nil` with different behaviors for each:
-		`true`: The Instance is included in the result array
-		`false`: The Instance is not included in the result array
-		`nil`: The Instance is not included in the result array and travel will not continue through its descendants
+	Travels Breadth-First.
+	
+	The predicate of this function can return `true`, `false`, or `nil` with different behaviors for each:
+	* `true`: The Instance is included in the result array
+	* `false`: The Instance is not included in the result array
+	* `nil`: The Instance is not included in the result array and travel will not continue through its descendants
 
 	```lua
-	local onlyBaseParts = descendantsBFS(game, function(child)
-		if child:IsA("Workspace") then
+	local onlyBaseParts = descendantsBFS(game, function(candidate)
+		if candidate:IsA("Workspace") then
 			return nil
 		end
 
-		return child:IsA("BasePart")
+		return candidate:IsA("BasePart")
 	end)
 	```
 ]=]
@@ -129,18 +131,20 @@ end
 	@param predicate? (Instance, number) -> boolean? -- The function to filter the descendants with. The second arg represents depth.
 	@return { Instance } -- The filtered descendants.
 
-	Travels Depth-First. The predicate of this function can return `true`, `false`, or `nil` with different behaviors for each:
-		`true`: The Instance is included in the result array
-		`false`: The Instance is not included in the result array
-		`nil`: The Instance is not included in the result array and travel will not continue through its descendants
+	Travels Depth-First.
+	
+	The predicate of this function can return `true`, `false`, or `nil` with different behaviors for each:
+	* `true`: The Instance is included in the result array
+	* `false`: The Instance is not included in the result array
+	* `nil`: The Instance is not included in the result array and travel will not continue through its descendants
 
 	```lua
-	local onlyBaseParts = descendantsDFS(game, function(child, depth)
-		if child:IsA("Workspace") or depth >= 2 then
+	local onlyBaseParts = descendantsDFS(game, function(candidate, depth)
+		if candidate:IsA("Workspace") or depth >= 2 then
 			return nil
 		end
 
-		return child:IsA("BasePart")
+		return candidate:IsA("BasePart")
 	end)
 	```
 ]=]

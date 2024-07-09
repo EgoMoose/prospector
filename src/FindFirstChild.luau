@@ -92,9 +92,9 @@ local byPathWrapped = RejectIfNil.wrap(byPath)
 	that passes the conditions of the predicate.
 
 	```lua
-	local found = byPredicate(workspace, true, function(child)
+	local found = byPredicate(workspace, true, function(descendant)
 		-- looking for the first descendant of workspace that's a BasePart and has a certain color
-		return child:IsA("BasePart") and child.Color = Color3.fromRGB(100, 120, 80)
+		return descendant:IsA("BasePart") and descendant.Color = Color3.fromRGB(100, 120, 80)
 	end):expect()
 	```
 ]=]

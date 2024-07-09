@@ -82,8 +82,8 @@ local byDepthWrapped = RejectIfNil.wrap(byDepth)
 	Travels up through the ancestry of `root` until it finds an Instance that passes the conditions of the predicate.
 
 	```lua
-	local found = byPredicate(workspace.Terrain, function(parent)
-		return parent.Name ~= "NotThisName"
+	local found = byPredicate(workspace.Terrain, function(ancestor)
+		return ancestor.Name ~= "NotThisName"
 	end):expect()
 	```
 ]=]
@@ -157,6 +157,7 @@ end
 
 	```lua
 	local found = byDepth(workspace.Terrain, 2):expect()
+	print(found == game)
 	```
 ]=]
 function FindFirstAncestor.byDepth(root: Instance, depth: number)

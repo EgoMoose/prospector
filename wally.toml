@@ -1,13 +1,15 @@
 [package]
 name = "egomoose/prospector"
 description = "https://github.com/EgoMoose/prospector"
-version = "1.0.0"
+version = "1.0.1"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"
-exclude = ["test", "assets"]
+exclude = ["**"]
+include = ["src", "src/**", "wally.toml", "wally.lock", "default.project.json", "LICENSE"]
 
 [dependencies]
+Queue = "egomoose/queue@0.1.0"
 Promise = "evaera/promise@4.0.0"
 
 [dev-dependencies]

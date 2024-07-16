@@ -1,10 +1,10 @@
 --!strict
 
 local rootPackage = script.Parent
-local Queue = require(rootPackage.Util.Queue)
 local RejectIfNil = require(rootPackage.Util.RejectIfNil)
 
 local packages = rootPackage.Parent
+local Queue = require(packages.Queue)
 local Promise = require(packages.Promise)
 
 --[=[
@@ -21,13 +21,13 @@ local function byPredicate(root: Instance, recursive: boolean, predicate: (Insta
 		local queue = Queue.new(root:GetChildren())
 
 		while queue:getLength() > 0 do
-			local front = queue:dequeue()
+			local front = queue:popFront()
 
 			if predicate(front) then
 				return resolve(front)
 			elseif recursive then
 				for _, child in front:GetChildren() do
-					queue:enqueue(child)
+					queue:pushBack(child)
 				end
 			end
 		end

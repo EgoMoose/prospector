@@ -1,7 +1,8 @@
 --!strict
 
 local rootPackage = script.Parent
-local Queue = require(rootPackage.Util.Queue)
+local packages = rootPackage.Parent
+local Queue = require(packages.Queue)
 
 --[=[
 	@class Collect
@@ -102,7 +103,7 @@ function Collect.descendantsBFS(root: Instance, predicate: ((Instance, number) -
 
 		local queue = Queue.new(children)
 		while queue:getLength() > 0 do
-			local front = queue:dequeue()
+			local front = queue:popFront()
 			local depth = depthMap[front]
 
 			local result = if predicate then predicate(front, depth) else true
@@ -114,7 +115,7 @@ function Collect.descendantsBFS(root: Instance, predicate: ((Instance, number) -
 				local nextDepth = depth + 1
 				for _, child in front:GetChildren() do
 					depthMap[child] = nextDepth
-					queue:enqueue(child)
+					queue:pushBack(child)
 				end
 			end
 		end

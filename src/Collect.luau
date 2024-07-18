@@ -2,7 +2,7 @@
 
 local rootPackage = script.Parent
 local packages = rootPackage.Parent
-local Queue = require(packages.Queue)
+local Deque = require(packages.Deque)
 
 --[=[
 	@class Collect
@@ -101,7 +101,7 @@ function Collect.descendantsBFS(root: Instance, predicate: ((Instance, number) -
 			depthMap[child] = 1
 		end
 
-		local queue = Queue.new(children)
+		local queue = Deque.raw(children)
 		while queue:getLength() > 0 do
 			local front = queue:popFront()
 			local depth = depthMap[front]

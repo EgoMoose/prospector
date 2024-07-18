@@ -16,6 +16,8 @@
 	"luau-lsp.sourcemap.rojoProjectFile": "test.project.json",
 	"stylua.targetReleaseVersion": "latest",
 	"cSpell.words": [
+		"deque",
+		"roblox",
 		"setmetatable",
 		"traceback",
 		"unmark"

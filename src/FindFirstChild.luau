@@ -4,7 +4,7 @@ local rootPackage = script.Parent
 local RejectIfNil = require(rootPackage.Util.RejectIfNil)
 
 local packages = rootPackage.Parent
-local Queue = require(packages.Queue)
+local Deque = require(packages.Deque)
 local Promise = require(packages.Promise)
 
 --[=[
@@ -18,7 +18,7 @@ local FindFirstChild = {}
 
 local function byPredicate(root: Instance, recursive: boolean, predicate: (Instance) -> boolean)
 	return Promise.new(function(resolve: (Instance?) -> ())
-		local queue = Queue.new(root:GetChildren())
+		local queue = Deque.raw(root:GetChildren())
 
 		while queue:getLength() > 0 do
 			local front = queue:popFront()

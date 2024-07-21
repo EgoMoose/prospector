@@ -4,13 +4,13 @@ registry = "test"
 
 [[package]]
 name = "egomoose/deque"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = []
 
 [[package]]
 name = "egomoose/prospector"
-version = "1.0.2"
-dependencies = [["Deque", "egomoose/deque@0.1.0"], ["Promise", "evaera/promise@4.0.0"], ["TestEZ", "roblox/testez@0.4.1"]]
+version = "1.0.3"
+dependencies = [["Deque", "egomoose/deque@0.1.1"], ["Promise", "evaera/promise@4.0.0"], ["TestEZ", "roblox/testez@0.4.1"]]
 
 [[package]]
 name = "evaera/promise"

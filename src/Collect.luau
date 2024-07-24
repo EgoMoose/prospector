@@ -71,7 +71,7 @@ end
 	@within Collect
 
 	@param root Instance
-	@param predicate? (Instance, number) -> boolean? -- The function to filter the descendants with. The second arg represents depth.
+	@param predicate? (Instance, number) -> boolean? -- The function to filter the descendants with. The second parameter represents depth.
 	@return { Instance } -- The filtered descendants.
 
 	Travels Breadth-First.

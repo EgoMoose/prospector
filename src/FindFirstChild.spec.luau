@@ -3,6 +3,8 @@
 return function()
 	local FindFirstChild = require(script.Parent:FindFirstChild("FindFirstChild"))
 
+	local somePart = Instance.new("Part", game.ReplicatedStorage)
+
 	describe("byPredicate", function()
 		it("should find Instances conditionally", function()
 			local found = FindFirstChild.byPredicate(workspace, false, function(child)
@@ -18,6 +20,27 @@ return function()
 			end):expect()
 
 			expect(found).to.equal(workspace.Baseplate)
+		end)
+
+		it("should exclude descendants of candidate when predicate returns nil with recursion", function()
+			local found = FindFirstChild.byPredicate(game, true, function(child)
+				if child == workspace then
+					return nil
+				end
+				return child:IsA("BasePart") and child.Size.X > 500
+			end):expect()
+
+			expect(found).to.equal(nil)
+
+			local found2 = FindFirstChild.byPredicate(game, true, function(child)
+				if child == workspace then
+					return nil
+				end
+				return child:IsA("BasePart")
+			end):expect()
+
+			expect(found2).to.never.equal(nil)
+			expect(found2).to.equal(somePart)
 		end)
 	end)
 

@@ -16,17 +16,25 @@ local FindFirstChild = {}
 
 -- Private
 
-local function byPredicate(root: Instance, recursive: boolean, predicate: (Instance) -> boolean)
+local function byPredicate(root: Instance, recursive: boolean, predicate: (Instance, number) -> boolean?)
 	return Promise.new(function(resolve: (Instance?) -> ())
-		local queue = Deque.raw(root:GetChildren())
+		local depthMap = {}
+		local children = root:GetChildren()
+		for _, child in children do
+			depthMap[child] = 1
+		end
 
+		local queue = Deque.raw(root:GetChildren())
 		while queue:getLength() > 0 do
 			local front = queue:popFront()
+			local depth = depthMap[front]
 
-			if predicate(front) then
+			local result = predicate(front, depth)
+			if result == true then
 				return resolve(front)
-			elseif recursive then
+			elseif recursive and result == false then
 				for _, child in front:GetChildren() do
+					depthMap[child] = depth + 1
 					queue:pushBack(child)
 				end
 			end
@@ -85,20 +93,27 @@ local byPathWrapped = RejectIfNil.wrap(byPath)
 
 	@param root Instance
 	@param recursive boolean -- Whether or not the search should be conducted recursively.
-	@param predicate? (Instance) -> boolean -- The conditions under which the search has successfully found a result.
+	@param predicate? (Instance, number) -> boolean -- The conditions under which the search has successfully found a result. The second parameter represents depth.
 	@return Promise<Instance?> -- The result of the search wrapped as a promise.
 
 	Travels Breadth-First through the descendants of `root` until it finds an Instance 
 	that passes the conditions of the predicate.
 
+	The predicate of this function can return `true`, `false`, or `nil` with different behaviors for each:
+	* `true`: The Instance successfully matches the criteria of the search.
+	* `false`: The Instance does not match the criteria of the search, but will continue to look through its descendants.
+	* `nil`: The Instance does not match the criteria of the search and will **not** continue to look through its descendants.
+
+	The distinction between `false` and `nil` only applies when `recursive = true`.
+
 	```lua
-	local found = byPredicate(workspace, true, function(descendant)
+	local found = byPredicate(workspace, true, function(descendant, depth)
 		-- looking for the first descendant of workspace that's a BasePart and has a certain color
 		return descendant:IsA("BasePart") and descendant.Color = Color3.fromRGB(100, 120, 80)
 	end):expect()
 	```
 ]=]
-function FindFirstChild.byPredicate(root: Instance, recursive: boolean, predicate: (Instance) -> boolean)
+function FindFirstChild.byPredicate(root: Instance, recursive: boolean, predicate: (Instance, number) -> boolean?)
 	return byPredicateWrapped(root, recursive, predicate)
 end
 

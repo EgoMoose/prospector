@@ -9,7 +9,7 @@ dependencies = []
 
 [[package]]
 name = "egomoose/prospector"
-version = "1.0.3"
+version = "1.1.0"
 dependencies = [["Deque", "egomoose/deque@0.1.1"], ["Promise", "evaera/promise@4.0.0"], ["TestEZ", "roblox/testez@0.4.1"]]
 
 [[package]]

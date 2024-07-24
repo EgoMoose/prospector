@@ -15,14 +15,16 @@ local FindFirstAncestor = {}
 
 -- Private
 
-local function byPredicate(root: Instance, predicate: (Instance) -> boolean)
+local function byPredicate(root: Instance, predicate: (Instance, number) -> boolean)
 	return Promise.new(function(resolve: (Instance?) -> ())
+		local depth = 1
 		local parent = root.Parent
 		while parent do
-			if predicate(parent) then
+			if predicate(parent, depth) then
 				return resolve(parent)
 			end
 			parent = parent.Parent
+			depth = depth + 1
 		end
 
 		resolve(nil)
@@ -76,7 +78,7 @@ local byDepthWrapped = RejectIfNil.wrap(byDepth)
 	@within FindFirstAncestor
 
 	@param root Instance
-	@param predicate? (Instance) -> boolean -- The conditions under which the search has successfully found a result.
+	@param predicate? (Instance, number) -> boolean -- The conditions under which the search has successfully found a result. The second parameter represents depth.
 	@return Promise<Instance?> -- The result of the search wrapped as a promise.
 
 	Travels up through the ancestry of `root` until it finds an Instance that passes the conditions of the predicate.
@@ -87,7 +89,7 @@ local byDepthWrapped = RejectIfNil.wrap(byDepth)
 	end):expect()
 	```
 ]=]
-function FindFirstAncestor.byPredicate(root: Instance, predicate: (Instance) -> boolean)
+function FindFirstAncestor.byPredicate(root: Instance, predicate: (Instance, number) -> boolean)
 	return byPredicateWrapped(root, predicate)
 end
 

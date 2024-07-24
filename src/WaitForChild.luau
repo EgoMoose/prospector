@@ -19,24 +19,31 @@ local WaitForChild = {}
 local function byPredicate(root: Instance, timeout: number, predicate: (Instance) -> boolean)
 	assert(timeout > 0, "timeout must be greater than 0")
 
+	local watching = {}
 	local maid = ConnectionMaid.new()
 	local search = Promise.new(function(resolve)
 		local function watch(child: Instance)
+			if watching[child] then
+				return
+			end
+
+			watching[child] = true
+
 			maid:mark(child.Changed:Connect(function()
-				if predicate(child) then
+				if child.Parent == root and predicate(child) then
 					resolve(child)
 				end
 			end))
 
 			maid:mark(child.AttributeChanged:Connect(function()
-				if predicate(child) then
+				if child.Parent == root and predicate(child) then
 					resolve(child)
 				end
 			end))
 		end
 
 		local function check(child: Instance)
-			if predicate(child) then
+			if child.Parent == root and predicate(child) then
 				return resolve(child)
 			end
 			watch(child)

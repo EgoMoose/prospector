@@ -13,13 +13,26 @@ local partProperties = {
 return function()
 	local WaitForChild = require(script.Parent:FindFirstChild("WaitForChild"))
 
-	local targetPart: BasePart
+	local target1: BasePart
 	task.delay(spawnAfter, function()
-		targetPart = Instance.new("WedgePart")
+		target1 = Instance.new("WedgePart")
 		for property, value in partProperties do
-			(targetPart :: any)[property] = value
+			(target1 :: any)[property] = value
 		end
-		targetPart.Parent = workspace
+		target1.Parent = workspace
+	end)
+
+	local target2: Decal
+	task.delay(spawnAfter, function()
+		target2 = Instance.new("Decal")
+		target2.Name = "WrongName"
+		target2.Parent = workspace
+
+		task.wait(0.1)
+		target2.Parent = game.ReplicatedStorage
+		target2.Name = "CorrectName"
+		task.wait(0.6)
+		target2.Parent = workspace
 	end)
 
 	local promises = {}
@@ -31,6 +44,14 @@ return function()
 
 	promises.byPredicate = WaitForChild.byPredicate(workspace, spawnAfter + 1, predicate)
 	promises.byPredicateHalf = WaitForChild.byPredicate(workspace, spawnAfter / 2, predicate)
+
+	promises.byPredicateWrongParent = WaitForChild.byPredicate(workspace, spawnAfter + 0.5, function(child)
+		return child.Name == "CorrectName"
+	end)
+
+	promises.byPredicateWrongParent2 = WaitForChild.byPredicate(workspace, spawnAfter + 1, function(child)
+		return child.Name == "CorrectName"
+	end)
 
 	-- byName
 	promises.byName = WaitForChild.byName(workspace, spawnAfter + 1, partProperties.Name)
@@ -52,8 +73,8 @@ return function()
 		it("should find Instances conditionally", function()
 			local found = promises.byPredicate:expect()
 
-			expect(targetPart).never.to.equal(nil)
-			expect(found).to.equal(targetPart)
+			expect(target1).never.to.equal(nil)
+			expect(found).to.equal(target1)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
@@ -61,14 +82,26 @@ return function()
 
 			expect(found).to.equal(nil)
 		end)
+
+		it("should timeout if when the condition passes under the wrong parent", function()
+			local found = promises.byPredicateWrongParent:expect()
+
+			expect(found).to.equal(nil)
+		end)
+
+		it("should succeed if when the condition passes under the right parent", function()
+			local found = promises.byPredicateWrongParent2:expect()
+
+			expect(found).to.equal(target2)
+		end)
 	end)
 
 	describe("byName", function()
 		it("should find Instances conditionally", function()
 			local found = promises.byName:expect()
 
-			expect(targetPart).never.to.equal(nil)
-			expect(found).to.equal(targetPart)
+			expect(target1).never.to.equal(nil)
+			expect(found).to.equal(target1)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
@@ -82,8 +115,8 @@ return function()
 		it("should find Instances conditionally", function()
 			local found = promises.ofClass:expect()
 
-			expect(targetPart).never.to.equal(nil)
-			expect(found).to.equal(targetPart)
+			expect(target1).never.to.equal(nil)
+			expect(found).to.equal(target1)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
@@ -97,8 +130,8 @@ return function()
 		it("should find Instances conditionally", function()
 			local found = promises.whichIsA:expect()
 
-			expect(targetPart).never.to.equal(nil)
-			expect(found).to.equal(targetPart)
+			expect(target1).never.to.equal(nil)
+			expect(found).to.equal(target1)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
@@ -112,8 +145,8 @@ return function()
 		it("should find Instances conditionally", function()
 			local found = promises.byPath:expect()
 
-			expect(targetPart).never.to.equal(nil)
-			expect(found).to.equal(targetPart)
+			expect(target1).never.to.equal(nil)
+			expect(found).to.equal(target1)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
@@ -129,5 +162,6 @@ return function()
 	end
 
 	Promise.all(flatPromises):await()
-	targetPart:Destroy()
+	target1:Destroy()
+	target2:Destroy()
 end

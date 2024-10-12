@@ -1,25 +1,26 @@
 {
-	"luau-lsp.require.mode": "relativeToFile",
-	"luau-lsp.types.definitionFiles": [
-		".vscode/definitions/testez.d.luau"
-	],
-
-	"[lua]": {
-		"editor.formatOnSave": true,
-		"editor.defaultFormatter": "JohnnyMorganz.stylua"
-	},
-	"[luau]": {
-		"editor.formatOnSave": true,
-		"editor.defaultFormatter": "JohnnyMorganz.stylua"
-	},
-
-	"luau-lsp.sourcemap.rojoProjectFile": "test.project.json",
-	"stylua.targetReleaseVersion": "latest",
-	"cSpell.words": [
-		"deque",
-		"roblox",
-		"setmetatable",
-		"traceback",
-		"unmark"
-	]
+  "luau-lsp.require.mode": "relativeToFile",
+  "luau-lsp.types.definitionFiles": [
+    ".vscode/definitions/testez.d.luau"
+  ],
+  "[lua]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "JohnnyMorganz.stylua"
+  },
+  "[luau]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "JohnnyMorganz.stylua"
+  },
+  "luau-lsp.sourcemap.rojoProjectFile": "test.project.json",
+  "stylua.targetReleaseVersion": "latest",
+  "cSpell.words": [
+    "deque",
+    "roblox",
+    "setmetatable",
+    "traceback",
+    "unmark"
+  ],
+  "luau-lsp.require.directoryAliases": {
+    "@lune/": "~/.lune/.typedefs/0.8.9/"
+  }
 }

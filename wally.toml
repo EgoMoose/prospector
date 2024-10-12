@@ -10,6 +10,7 @@ include = ["src", "src/**", "wally.toml", "wally.lock", "default.project.json", 
 
 [dependencies]
 Deque = "egomoose/deque@0.1.1"
+Trove = "sleitnick/trove@1.4.0"
 Promise = "evaera/promise@4.0.0"
 
 [dev-dependencies]

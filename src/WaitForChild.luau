@@ -2,9 +2,9 @@
 
 local rootPackage = script.Parent
 local RejectIfNil = require(rootPackage.Util.RejectIfNil)
-local ConnectionMaid = require(rootPackage.Util.ConnectionMaid)
 
 local packages = rootPackage.Parent
+local Trove = require(packages.Trove)
 local Promise = require(packages.Promise)
 
 --[=[
@@ -20,7 +20,7 @@ local function byPredicate(root: Instance, timeout: number, predicate: (Instance
 	assert(timeout > 0, "timeout must be greater than 0")
 
 	local watching = {}
-	local maid = ConnectionMaid.new()
+	local trove = Trove.new()
 	local search = Promise.new(function(resolve)
 		local function watch(child: Instance)
 			if watching[child] then
@@ -29,13 +29,13 @@ local function byPredicate(root: Instance, timeout: number, predicate: (Instance
 
 			watching[child] = true
 
-			maid:mark(child.Changed:Connect(function()
+			trove:Add(child.Changed:Connect(function()
 				if child.Parent == root and predicate(child) then
 					resolve(child)
 				end
 			end))
 
-			maid:mark(child.AttributeChanged:Connect(function()
+			trove:Add(child.AttributeChanged:Connect(function()
 				if child.Parent == root and predicate(child) then
 					resolve(child)
 				end
@@ -53,14 +53,14 @@ local function byPredicate(root: Instance, timeout: number, predicate: (Instance
 			check(child)
 		end
 
-		maid:mark(root.ChildAdded:Connect(function(child)
+		trove:Add(root.ChildAdded:Connect(function(child)
 			check(child)
 		end))
 	end)
 
 	Promise.try(function()
 		search:await()
-		maid:destroy()
+		trove:Destroy()
 	end)
 
 	return Promise.race({

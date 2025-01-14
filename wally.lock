@@ -10,12 +10,7 @@ dependencies = []
 [[package]]
 name = "egomoose/prospector"
 version = "1.1.0"
-dependencies = [["Deque", "egomoose/deque@0.1.1"], ["Promise", "evaera/promise@4.0.0"], ["Trove", "sleitnick/trove@1.4.0"], ["TestEZ", "roblox/testez@0.4.1"]]
-
-[[package]]
-name = "evaera/promise"
-version = "4.0.0"
-dependencies = []
+dependencies = [["Deque", "egomoose/deque@0.1.1"], ["Trove", "sleitnick/trove@1.5.0"], ["TestEZ", "roblox/testez@0.4.1"]]
 
 [[package]]
 name = "roblox/testez"
@@ -24,5 +19,5 @@ dependencies = []
 
 [[package]]
 name = "sleitnick/trove"
-version = "1.4.0"
+version = "1.5.0"
 dependencies = []

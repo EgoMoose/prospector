@@ -1,29 +1,44 @@
 --!strict
 
-local rootPackage = script.Parent
-local packages = rootPackage.Parent
-local Promise = require(packages.Promise)
+local Future = require(script.Parent.Helpers.Future)
 
-local spawnAfter = 0.2
-local partProperties = {
+local SPAWN_AFTER = 1
+local PART_PROPERTIES = {
 	Name = "SomePart",
 	Color = Color3.fromRGB(10, 20, 30),
 }
+
+local function packAsCallback<T...>(...: T...): () -> T...
+	local n = select("#", ...)
+	local packed = { select(1, ...) }
+	return function()
+		return unpack(packed, 1, n)
+	end
+end
+
+local function wrapFuture<T, U...>(callback: (U...) -> T, ...: U...)
+	local future = Future.raw() :: Future.Future<T>
+	local unpackCallback = packAsCallback(...)
+	task.spawn(function()
+		future:complete(callback(unpackCallback()))
+	end)
+	return future
+end
 
 return function()
 	local WaitForChild = require(script.Parent:FindFirstChild("WaitForChild"))
 
 	local target1: BasePart
-	task.delay(spawnAfter, function()
+	task.delay(SPAWN_AFTER, function()
 		target1 = Instance.new("WedgePart")
-		for property, value in partProperties do
+		for property, value in PART_PROPERTIES do
 			(target1 :: any)[property] = value
 		end
 		target1.Parent = workspace
 	end)
 
 	local target2: Decal
-	task.delay(spawnAfter, function()
+	task.delay(SPAWN_AFTER, function()
 		target2 = Instance.new("Decal")
 		target2.Name = "WrongName"
 		target2.Parent = workspace
@@ -35,62 +50,63 @@ return function()
 		target2.Parent = workspace
 	end)
 
-	local promises = {}
+	local futures: { [string]: Future.Future<Instance?> } = {}
 
 	-- byPredicate
 	local function predicate(child: Instance)
-		return child:IsA("BasePart") and child.Color == partProperties.Color
+		return child:IsA("BasePart") and child.Color == PART_PROPERTIES.Color
 	end
 
-	promises.byPredicate = WaitForChild.byPredicate(workspace, spawnAfter + 1, predicate)
-	promises.byPredicateHalf = WaitForChild.byPredicate(workspace, spawnAfter / 2, predicate)
+	futures.byPredicate = wrapFuture(WaitForChild.byPredicate, workspace, SPAWN_AFTER + 1, predicate)
+	futures.byPredicateHalf = wrapFuture(WaitForChild.byPredicate, workspace, SPAWN_AFTER / 2, predicate)
 
-	promises.byPredicateWrongParent = WaitForChild.byPredicate(workspace, spawnAfter + 0.5, function(child)
+	futures.byPredicateWrongParent = wrapFuture(WaitForChild.byPredicate, workspace, SPAWN_AFTER + 0.5, function(child)
 		return child.Name == "CorrectName"
 	end)
 
-	promises.byPredicateWrongParent2 = WaitForChild.byPredicate(workspace, spawnAfter + 1, function(child)
+	futures.byPredicateWrongParent2 = wrapFuture(WaitForChild.byPredicate, workspace, SPAWN_AFTER + 1, function(child)
 		return child.Name == "CorrectName"
 	end)
 
 	-- byName
-	promises.byName = WaitForChild.byName(workspace, spawnAfter + 1, partProperties.Name)
-	promises.byNameHalf = WaitForChild.byName(workspace, spawnAfter / 2, partProperties.Name)
+
+	futures.byName = wrapFuture(WaitForChild.byName, workspace, SPAWN_AFTER + 1, PART_PROPERTIES.Name)
+	futures.byNameHalf = wrapFuture(WaitForChild.byName, workspace, SPAWN_AFTER / 2, PART_PROPERTIES.Name)
 
 	-- ofClass
-	promises.ofClass = WaitForChild.ofClass(workspace, spawnAfter + 1, "WedgePart")
-	promises.ofClassHalf = WaitForChild.ofClass(workspace, spawnAfter / 2, "WedgePart")
+	futures.ofClass = wrapFuture(WaitForChild.ofClass, workspace, SPAWN_AFTER + 1, "WedgePart")
+	futures.ofClassHalf = wrapFuture(WaitForChild.ofClass, workspace, SPAWN_AFTER / 2, "WedgePart")
 
 	-- whichIsA
-	promises.whichIsA = WaitForChild.whichIsA(workspace, spawnAfter + 1, "WedgePart")
-	promises.whichIsAHalf = WaitForChild.whichIsA(workspace, spawnAfter / 2, "WedgePart")
+	futures.whichIsA = wrapFuture(WaitForChild.whichIsA, workspace, SPAWN_AFTER + 1, "WedgePart")
+	futures.whichIsAHalf = wrapFuture(WaitForChild.whichIsA, workspace, SPAWN_AFTER / 2, "WedgePart")
 
 	-- byPath
-	promises.byPath = WaitForChild.byPath(game, spawnAfter + 1, { "Workspace", partProperties.Name })
-	promises.byPathHalf = WaitForChild.byPath(game, spawnAfter / 2, { "Workspace", partProperties.Name })
+	futures.byPath = wrapFuture(WaitForChild.byPath, game, SPAWN_AFTER + 1, { "Workspace", PART_PROPERTIES.Name })
+	futures.byPathHalf = wrapFuture(WaitForChild.byPath, game, SPAWN_AFTER / 2, { "Workspace", PART_PROPERTIES.Name })
 
 	describe("byPredicate", function()
 		it("should find Instances conditionally", function()
-			local found = promises.byPredicate:expect()
+			local found = futures.byPredicate:expect()
 
 			expect(target1).never.to.equal(nil)
 			expect(found).to.equal(target1)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
-			local found = promises.byPredicateHalf:expect()
+			local found = futures.byPredicateHalf:expect()
 
 			expect(found).to.equal(nil)
 		end)
 
 		it("should timeout if when the condition passes under the wrong parent", function()
-			local found = promises.byPredicateWrongParent:expect()
+			local found = futures.byPredicateWrongParent:expect()
 
 			expect(found).to.equal(nil)
 		end)
 
 		it("should succeed if when the condition passes under the right parent", function()
-			local found = promises.byPredicateWrongParent2:expect()
+			local found = futures.byPredicateWrongParent2:expect()
 
 			expect(found).to.equal(target2)
 		end)
@@ -98,14 +114,14 @@ return function()
 
 	describe("byName", function()
 		it("should find Instances conditionally", function()
-			local found = promises.byName:expect()
+			local found = futures.byName:expect()
 
 			expect(target1).never.to.equal(nil)
 			expect(found).to.equal(target1)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
-			local found = promises.byNameHalf:expect()
+			local found = futures.byNameHalf:expect()
 
 			expect(found).to.equal(nil)
 		end)
@@ -113,14 +129,14 @@ return function()
 
 	describe("ofClass", function()
 		it("should find Instances conditionally", function()
-			local found = promises.ofClass:expect()
+			local found = futures.ofClass:expect()
 
 			expect(target1).never.to.equal(nil)
 			expect(found).to.equal(target1)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
-			local found = promises.ofClassHalf:expect()
+			local found = futures.ofClassHalf:expect()
 
 			expect(found).to.equal(nil)
 		end)
@@ -128,14 +144,14 @@ return function()
 
 	describe("whichIsA", function()
 		it("should find Instances conditionally", function()
-			local found = promises.whichIsA:expect()
+			local found = futures.whichIsA:expect()
 
 			expect(target1).never.to.equal(nil)
 			expect(found).to.equal(target1)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
-			local found = promises.whichIsAHalf:expect()
+			local found = futures.whichIsAHalf:expect()
 
 			expect(found).to.equal(nil)
 		end)
@@ -143,25 +159,23 @@ return function()
 
 	describe("byPath", function()
 		it("should find Instances conditionally", function()
-			local found = promises.byPath:expect()
+			local found = futures.byPath:expect()
 
 			expect(target1).never.to.equal(nil)
 			expect(found).to.equal(target1)
 		end)
 
 		it("should timeout if no Instances are found conditionally", function()
-			local found = promises.byPathHalf:expect()
+			local found = futures.byPathHalf:expect()
 
 			expect(found).to.equal(nil)
 		end)
 	end)
 
-	local flatPromises = {}
-	for _, promise in promises do
-		table.insert(flatPromises, promise)
+	for _, future in futures do
+		(future :: Future.Future<any>):expect()
 	end
 
-	Promise.all(flatPromises):await()
 	target1:Destroy()
 	target2:Destroy()
 end

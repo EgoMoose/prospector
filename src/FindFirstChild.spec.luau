@@ -1,4 +1,4 @@
---!strict
+--!nonstrict
 
 return function()
 	local FindFirstChild = require(script.Parent:FindFirstChild("FindFirstChild"))
@@ -9,7 +9,7 @@ return function()
 		it("should find Instances conditionally", function()
 			local found = FindFirstChild.byPredicate(workspace, false, function(child)
 				return child:IsA("BasePart") and child.Size.X > 500
-			end):expect()
+			end)
 
 			expect(found).to.equal(workspace.Baseplate)
 		end)
@@ -17,7 +17,7 @@ return function()
 		it("should find Instances conditionally with recursion", function()
 			local found = FindFirstChild.byPredicate(game, true, function(child)
 				return child:IsA("BasePart") and child.Size.X > 500
-			end):expect()
+			end)
 
 			expect(found).to.equal(workspace.Baseplate)
 		end)
@@ -28,7 +28,7 @@ return function()
 					return nil
 				end
 				return child:IsA("BasePart") and child.Size.X > 500
-			end):expect()
+			end)
 
 			expect(found).to.equal(nil)
 
@@ -37,7 +37,7 @@ return function()
 					return nil
 				end
 				return child:IsA("BasePart")
-			end):expect()
+			end)
 
 			expect(found2).to.never.equal(nil)
 			expect(found2).to.equal(somePart)
@@ -46,13 +46,13 @@ return function()
 
 	describe("byName", function()
 		it("should find Instances conditionally", function()
-			local found = FindFirstChild.byName(workspace, false, "Terrain"):expect()
+			local found = FindFirstChild.byName(workspace, false, "Terrain")
 
 			expect(found.Name).to.equal("Terrain")
 		end)
 
 		it("should find Instances conditionally with recursion", function()
-			local found = FindFirstChild.byName(game, true, "Terrain"):expect()
+			local found = FindFirstChild.byName(game, true, "Terrain")
 
 			expect(found.Name).to.equal("Terrain")
 		end)
@@ -60,13 +60,13 @@ return function()
 
 	describe("ofClass", function()
 		it("should find Instances conditionally", function()
-			local found = FindFirstChild.ofClass(workspace, false, "Terrain"):expect()
+			local found = FindFirstChild.ofClass(workspace, false, "Terrain")
 
 			expect(found.ClassName).to.equal("Terrain")
 		end)
 
 		it("should find Instances conditionally with recursion", function()
-			local found = FindFirstChild.ofClass(game, true, "Terrain"):expect()
+			local found = FindFirstChild.ofClass(game, true, "Terrain")
 
 			expect(found.ClassName).to.equal("Terrain")
 		end)
@@ -74,14 +74,14 @@ return function()
 
 	describe("whichIsA", function()
 		it("should find Instances conditionally", function()
-			local found = FindFirstChild.whichIsA(workspace, false, "BasePart"):expect()
+			local found = FindFirstChild.whichIsA(workspace, false, "BasePart")
 
 			expect(found).never.to.equal(nil)
 			expect(found:IsA("BasePart")).to.equal(true)
 		end)
 
 		it("should find Instances conditionally with recursion", function()
-			local found = FindFirstChild.whichIsA(game, true, "BasePart"):expect()
+			local found = FindFirstChild.whichIsA(game, true, "BasePart")
 
 			expect(found).never.to.equal(nil)
 			expect(found:IsA("BasePart")).to.equal(true)
@@ -90,7 +90,7 @@ return function()
 
 	describe("byPath", function()
 		it("should find Instances conditionally", function()
-			local found = FindFirstChild.byPath(game, { "Workspace", "Terrain" }):expect()
+			local found = FindFirstChild.byPath(game, { "Workspace", "Terrain" })
 
 			expect(found).to.equal(workspace.Terrain)
 		end)

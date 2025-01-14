@@ -1,8 +1,6 @@
 --!strict
 
-local rootPackage = script.Parent
-local packages = rootPackage.Parent
-local Deque = require(packages.Deque)
+local Deque = require(script.Parent.Parent.Deque)
 
 --[=[
 	@class Collect

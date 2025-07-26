@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Create Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: "Setup rokit"
+        uses: CompeyDev/setup-rokit@v0.1.2
+
+      - name: "Run wally install"
+        run: |
+          lune run wally-install
+
+      - name: "Build rbxm"
+        run: |
+          rojo build build.project.json --output prospector-${{ github.ref_name }}.rbxm
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: prospector-${{ github.ref_name }}.rbxm

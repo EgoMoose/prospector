@@ -14,7 +14,7 @@ dependencies = []
 
 [[package]]
 name = "egomoose/prospector"
-version = "2.0.0"
+version = "2.0.1"
 dependencies = [["Deque", "egomoose/deque@0.1.1"], ["Future", "egomoose/future@1.0.0"], ["Trove", "sleitnick/trove@1.5.0"], ["TestEZ", "roblox/testez@0.4.1"]]
 
 [[package]]

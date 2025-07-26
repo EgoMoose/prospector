@@ -1,6 +1,6 @@
 --!strict
 
-local Future = require(script.Parent.Helpers.Future)
+local Future = require(script.Parent.Parent.Future)
 
 local SPAWN_AFTER = 1
 local PART_PROPERTIES = {
@@ -17,7 +17,7 @@ local function packAsCallback<T...>(...: T...): () -> T...
 end
 
 local function wrapFuture<T, U...>(callback: (U...) -> T, ...: U...)
-	local future = Future.raw() :: Future.Future<T>
+	local future = Future.new() :: Future.Future<T>
 	local unpackCallback = packAsCallback(...)
 	task.spawn(function()
 		future:complete(callback(unpackCallback()))

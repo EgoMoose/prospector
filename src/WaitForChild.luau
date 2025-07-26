@@ -1,7 +1,7 @@
 --!strict
 
 local Trove = require(script.Parent.Parent.Trove)
-local Future = require(script.Parent.Helpers.Future)
+local Future = require(script.Parent.Parent.Future)
 
 --[=[
 	@class WaitForChild
@@ -35,7 +35,7 @@ function WaitForChild.byPredicate(root: Instance, timeout: number, predicate: (I
 	assert(timeout > 0, "timeout must be greater than 0")
 
 	local trove = Trove.new()
-	local search = Future.raw()
+	local search = Future.new()
 
 	local function complete(instance: Instance?)
 		if not search:isCompleted() then

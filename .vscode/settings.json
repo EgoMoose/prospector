@@ -20,7 +20,4 @@
     "traceback",
     "unmark"
   ],
-  "luau-lsp.require.directoryAliases": {
-    "@lune/": "~/.lune/.typedefs/0.8.9/"
-  }
 }
